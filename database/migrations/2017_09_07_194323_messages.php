@@ -13,7 +13,14 @@ class Messages extends Migration
      */
     public function up()
     {
-        //
+      Schema::create('messages', function (Blueprint $table) {
+          $table->increments('id');
+          $table->integer('userID')->unique();
+          $table->integer('roomID');
+          $table->string('content');
+          $table->rememberToken();
+          $table->timestamps();
+      });
     }
 
     /**

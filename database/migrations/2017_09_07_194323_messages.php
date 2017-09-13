@@ -15,7 +15,7 @@ class Messages extends Migration
     {
       Schema::create('messages', function (Blueprint $table) {
           $table->increments('id');
-          $table->integer('userID')->unique();
+          $table->integer('userID');
           $table->integer('roomID');
           $table->string('content');
           $table->rememberToken();

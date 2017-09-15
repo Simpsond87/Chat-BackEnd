@@ -9,15 +9,18 @@ use Purifier;
 use Hash;
 use Auth;
 use JWTAuth;
+use Vinkla\Pusher\PusherManager;
 
 use App\User;
 
 class UserController extends Controller
 {
+  protected $pusher;
 
-  public function __construct()
+  public function __construct(PusherManager $pusher)
   {
-    $this->middleware('jwt.auth', ['only' => ['getUser']]);
+    $this->middleware('jwt.auth', ['only' => ['getUser', 'presenceAuth']]);
+    $this->pusher = $pusher;
   }
 
   public function signUp(Request $request)
@@ -99,6 +102,18 @@ class UserController extends Controller
     $users = User::all();
 
     return Response::json(['usernames' => $users]);
+  }
+
+  public function presenceAuth(Request $request)
+  {
+    $user = Auth::user();
+    $user = User::find($user->id);
+
+    $presence_data = ['name' => $user->username];
+    $room = $request->input('channel_name');
+    $socket = $request->input('socket_id');
+
+    echo $this->pusher->presence_auth($room, $socket, $user->id, $presence_data);
   }
 
 }

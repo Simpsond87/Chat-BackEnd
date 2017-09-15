@@ -64,7 +64,7 @@ class MessagesController extends Controller
     ->select('messages.id', 'messages.content', 'messages.created_at', 'users.username')
     ->first();
 
-    Pusher::trigger('room_' . $roomID, 'send-message', ['message' => $messageData]);
+    Pusher::trigger('presenceRoom_' . $roomID, 'send-message', ['message' => $messageData]);
 
     return Response::json(['success' => 'Message saved']);
   }

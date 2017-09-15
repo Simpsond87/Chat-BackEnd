@@ -17,6 +17,7 @@ Route::post('signUp', 'UserController@signUp');
 Route::get('getUser', 'UserController@getUser');
 Route::get('getUsers', 'UserController@getUsers');
 
+Route::post('presenceAuth', 'UserController@presenceAuth');
 Route::get('getMessages/{id}', 'MessagesController@getMessages');
 Route::post('sendMessage', 'MessagesController@sendMessage');
 

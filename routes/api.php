@@ -17,8 +17,11 @@ Route::post('signUp', 'UserController@signUp');
 Route::get('getUser', 'UserController@getUser');
 Route::get('getUsers', 'UserController@getUsers');
 
-Route::post('presenceAuth', 'UserController@presenceAuth');
 Route::get('getMessages/{id}', 'MessagesController@getMessages');
 Route::post('sendMessage', 'MessagesController@sendMessage');
+Route::get('getOnline/{id}', 'UserController@getOnline');
+Route::get('getRooms', 'RoomsController@index');
+Route::get('signOut', 'UserController@signOut');
+Route::get('leaveRoom', 'UserController@leaveRoom');
 
 Route::any('{path?}', 'MainController@index')->where("path", ".+");

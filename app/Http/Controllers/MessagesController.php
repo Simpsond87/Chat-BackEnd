@@ -18,12 +18,12 @@ class MessagesController extends Controller
 {
   public function __construct()
   {
-    $this->middleware('jwt.auth', ['only' => ['sendMessage']]);
+    $this->middleware('jwt.auth', ['only' => ['getMessages','sendMessage']]);
   }
 
   public function getMessages($id)
   {
-    $messages = Message::where('roomID', '=', $id)
+    $messages = Message::where('messages.roomID', '=', $id)
     ->orderBy('messages.created_at', 'desc')
     ->join('users', 'messages.userID', '=', 'users.id')
     ->select('messages.id', 'messages.content', 'messages.created_at', 'users.username')
@@ -31,6 +31,11 @@ class MessagesController extends Controller
     ->get()->toArray();
 
     $messages = array_reverse($messages);
+
+    $user = Auth::user();
+    $user = User::find($user->id);
+    $user->roomID = $id;
+    $user->save();
 
     return Response::json(['messages' => $messages]);
   }

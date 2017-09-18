@@ -19,7 +19,7 @@ class UserController extends Controller
 
   public function __construct(PusherManager $pusher)
   {
-    $this->middleware('jwt.auth', ['only' => ['getUser', 'presenceAuth']]);
+    $this->middleware('jwt.auth', ['only' => ['getUser', 'signOut', 'leaveRoom']]);
     $this->pusher = $pusher;
   }
 
@@ -49,6 +49,8 @@ class UserController extends Controller
       $user = new User;
       $user->username = $username;
       $user->password = $password;
+      $user->isonline = 0;
+      $user->roomID = 0;
       $user->save();
 
       return Response::json(['success' => 'User Signed Up']);
@@ -85,6 +87,9 @@ class UserController extends Controller
     }
     else
     {
+      $user = User::where('username', '=', $username)->first();
+      $user->isonline = 1;
+      $user->save();
       return Response::json(['token' => $token]);
     }
   }
@@ -104,16 +109,33 @@ class UserController extends Controller
     return Response::json(['usernames' => $users]);
   }
 
-  public function presenceAuth(Request $request)
+  public function getOnline($id)
+  {
+    $users = User::where('isonline', '=', 1)->where('roomID', '=', $id)->get();
+    return Response::json(['users' => $users]);
+  }
+
+  public function signOut()
   {
     $user = Auth::user();
     $user = User::find($user->id);
 
-    $presence_data = ['name' => $user->username];
-    $room = $request->input('channel_name');
-    $socket = $request->input('socket_id');
+    $user->roomID = 0;
+    $user->isonline = 0;
+    $user->save();
 
-    echo $this->pusher->presence_auth($room, $socket, $user->id, $presence_data);
+    return Response::json(['success' => 'goodbye']);
+  }
+
+  public function leaveRoom()
+  {
+    $user = Auth::user();
+    $user = User::find($user->id);
+
+    $user->roomID = 0;
+    $user->save();
+
+    return Response::json(['success' => 'goodbye']);
   }
 
 }
